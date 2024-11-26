@@ -39,7 +39,7 @@ SELECT
 	value,
 	region_code AS area_of_data,
 	name,
-	price_value,
+	price_value AS unit_value_or_industry_code,
 	unit_name
 FROM primary_table_a
 )
