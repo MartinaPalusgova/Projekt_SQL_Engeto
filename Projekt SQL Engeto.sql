@@ -7,7 +7,7 @@ SELECT
 	`year`,
 	value,
 	value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`) AS increase,
-	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "%_increase",
+	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "percent_increase",
 	CASE 
 		WHEN (value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))>0 THEN "increase"
 		WHEN (value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))<0 THEN "decrease"
@@ -26,7 +26,7 @@ SELECT
 	`year`,
 	value,
 	value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`) AS increase,
-	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "%_increase",
+	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "percent_increase",
 	CASE 
 		WHEN (value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))>0 THEN "increase"
 		WHEN (value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))<0 THEN "decrease"
@@ -49,8 +49,8 @@ SELECT
 	name,
 	`year`,
 	value,
-	value - LAG(value,1) OVER (PARTITION  BY name ORDER BY `year`) AS increase, -- musím vymyslet
-	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "%_increase",
+	value - LAG(value,1) OVER (PARTITION  BY name ORDER BY `year`) AS increase, 
+	ROUND((value - LAG(value,1) OVER (PARTITION BY name ORDER BY `year`))*100/LAG(value,1) OVER (PARTITION BY name ORDER BY `year`),1) AS "percent_increase",
 	area_of_data
 FROM t_martina_palusgova_project_sql_primary_final
 WHERE area_of_data = 'Průměrná hrubá mzda na zaměstnance' AND name IS NOT NULL)
@@ -110,26 +110,10 @@ SELECT
 	ROUND(AVG(percent_increase),1) AS average_increase
 FROM comparison
 GROUP BY name
-ORDER BY sum_of_increase;
+ORDER BY sum_of_increase
+;
 
 -- 4. Existuje rok, ve kterém byl meziroční nárůst cen potravin výrazně vyšší než růst mezd (větší než 10 %)?
-SELECT 
-	`year`,
-	ROUND(AVG(value),2) AS average_value_CZ,
-	ROUND((AVG(value) - LAG(AVG(value),1) OVER (ORDER BY `year`))*100/LAG(AVG(value),1) OVER (ORDER BY `year`),1) AS percent_increase
-FROM t_martina_palusgova_project_sql_primary_final
-WHERE area_of_data != 'Průměrná hrubá mzda na zaměstnance' AND area_of_data != 'Průměrný počet zaměstnaných osob'
-GROUP BY `year`
-ORDER BY `year`;
-
-SELECT 
-	`year`,
-	value,
-	ROUND((value - LAG(value,1) OVER (ORDER BY `year`))*100/LAG(value,1) OVER (ORDER BY `year`),1) AS percent_increase
-FROM t_martina_palusgova_project_sql_primary_final
-WHERE area_of_data = 'Průměrná hrubá mzda na zaměstnance' AND name IS NULL
-;
--- pokus nějak jinak
 WITH food AS(
 SELECT 
 	`year`,
@@ -179,7 +163,7 @@ SELECT
 	GDP,
 	ROUND((GDP - LAG(GDP,1) OVER (ORDER BY `year`))*100/LAG(GDP,1) OVER (ORDER BY `year`),1) AS percent_increase_GDP
 FROM t_martina_palusgova_project_sql_secondary_final
-WHERE country LIKE 'Czech%' AND `year` BETWEEN 2006 AND 2018
+WHERE country LIKE 'Czech%'
 ORDER BY `year`)
 SELECT 
 	fo.`year`,
@@ -193,5 +177,5 @@ FROM food AS fo
 JOIN salary AS sa
 	ON fo.`year` = sa.`year`
 JOIN GDP_czechia AS g
-	ON fo.YEAR = g.year
+	ON fo.`year` = g.`year`
 ;
