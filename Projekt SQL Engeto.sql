@@ -1,4 +1,5 @@
 -- Projekt Engeto
+-- uživatelské jméno na Discordu: Martina Pal
 
 -- 1. úkol Rostou v průběhu let mzdy ve všech odvětvích, nebo v některých klesají?
 -- vývoj dle odětví a roku
